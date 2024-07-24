@@ -112,7 +112,7 @@ list.files() # Listar os arquivos presentes no diretório definido
 <pre id="diretorio"><code class="r">
 
 
-SRAG <- read.dbf(includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")")
+SRAG <- #seu caminho
 
 
 </code></pre>

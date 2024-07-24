@@ -87,12 +87,7 @@ lapply(pacotes, require, character.only = TRUE)
 
 
 # Definir Diretório de Trabalho onde os arquivos serão salvos e carregados.
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
-
-
+```
 getwd() # Verificar o diretório de trabalho atual
 
 
@@ -101,22 +96,17 @@ setwd("C:/Users/talita.batista/Documents/TrabalhosGTGripe/OFICINA_SRAG/OFICINA_S
 
 list.files() # Listar os arquivos presentes no diretório definido
 
-</code></pre>
-</div>
+```
 
 
 # Carregar Dados DBF
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 
-SRAG <- #seu caminho
+SRAG <- #seucaminho
 
-
-</code></pre>
-</div>
+```
 
 # Remover Duplicidades
 
@@ -128,10 +118,7 @@ SRAG <- #seu caminho
   
   4.  Combinar registros duplicados selecionados e registros não duplicados
 
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 duplicados <- SRAG %>%
   group_by(NM_PACIENT, NU_CPF, DT_NASC, CS_SEXO, NM_MAE_PAC, DT_SIN_PRI) %>%
@@ -154,18 +141,13 @@ registros_nao_duplicados <- SRAG %>%
 
 SRAG_final <- bind_rows(registros_duplicados, registros_nao_duplicados)
 
-</code></pre>
-</div>
-
+```
 # Processamento Inicial dos Dados. Conversão de tipos de dados e a criação de novas colunas
 
   1.  Removendo inconsistência: Aplicação da definição de caso
   2.  Transformação e criação de colunas
   
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 SRAG_final <- SRAG_final %>% 
   mutate(SEM_PRI = as.numeric(SEM_PRI)) %>%
@@ -205,16 +187,11 @@ SRAG_final <- SRAG_final %>%
   mutate(indigena = ifelse(CS_RACA == 5, 1, 0), 
          tabagismo = ifelse(TABAG == 1, 1, 0))
          
-
-</code></pre>
-</div>
+```
          
 # Criar Faixas etárias (transformar formatos de datas)
 
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 SRAG_final <- SRAG_final %>%
   mutate(DT_NASC = parse_date_time(DT_NASC, orders = c("dmy", "ymd")),                 # Calcular a idade com base no valor de DT_NASC e DT_SIN_PRI   
@@ -234,14 +211,11 @@ SRAG_final <- SRAG_final %>%
 
 table(SRAG_final$categoria_dt_nasc)              # Verificar se a coluna foi criada corretamente
 
-</code></pre>
-</div>
+```
 
 # Padronização e criação de colunas 
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 SRAG_final <- SRAG_final %>% 
   
@@ -635,28 +609,21 @@ SRAG_final <- SRAG_final %>%
          
          INFLUENZA_obito = ifelse(classi_nova == "2. Influenza" & EVOLUCAO == 2, 1, 0))   
 
-</code></pre>
-</div>
+```
 
 
 # Filtrar apenas quem atende a definição de caso
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
-
+```
 
 SRAG_filtrado2 <- SRAG_final %>% 
   filter(caso_srag == "1")
   
-  </code></pre>
-</div>
+```
 
 # Criar as tabelas para casos com caracteristicas de pessoas
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 TABELA1_SRAG_CLASSIFICACAO_CASOS <- SRAG_filtrado2 %>% 
   dcast(caso_srag + ANO ~ classi_nova, value.var = "caso_srag")
@@ -687,14 +654,13 @@ TABELA_UNIDA_CASOS <- bind_rows(
   TABELA2_SRAG_RACA_CASOS
 ) %>% relocate(varivel, .before = 1) # Colocar a coluna varivel em primeiro 
 
-</code></pre>
-</div>
+# Exportar a tabela unida para um arquivo Excel
+write.xlsx(TABELA_UNIDA_CASOS, "TABELA_UNIDA_CASOS.xlsx")
+
+```
 
 # Criar as tabelas de características de pessoas para os óbitos
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 TABELA1_SRAG_CLASSIFICACAO_OBITOS <- SRAG_filtrado2 %>% 
   dcast(obito_srag + ANO ~ classi_nova, value.var = "obito_srag")
@@ -725,13 +691,12 @@ TABELA_UNIDA_OBITOS <- bind_rows(
   TABELA2_SRAG_RACA_OBITOS
 ) %>% relocate(varivel, .before = 1) # Colocar a coluna varivel em primeiro
 
+# Exportar a tabela unida para um arquivo Excel
+write.xlsx(TABELA_UNIDA_OBITOS, "TABELA_UNIDA_OBITOS.xlsx")
 
-</code></pre>
-</div>
+```
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 # Criar o workbook e adicionar as tabelas em abas separadas
 wb <- createWorkbook()
@@ -742,16 +707,14 @@ writeData(wb, sheet = "Casos", TABELA_UNIDA_CASOS)
 writeData(wb, sheet = "Óbitos", TABELA_UNIDA_OBITOS)
 
 
-saveWorkbook(wb, includeHTML("Caderno_de_Analise_SRAG_SIVEP.html"))  # Salvar o arquivo Excel
+# Salvar o arquivo Excel
+saveWorkbook(wb, "TABELA_PESSOA_SRAG_SIVEP.xlsx", overwrite = TRUE)
 
-</code></pre>
-</div>
+```
 
 # Criar pirâmide de gênero e faixa etária dos casos de SRAG
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 dados_piramide <- SRAG_filtrado2 %>%                # Agrupar os dados por faixa etária e sexo e contar os casos
   filter(!is.na(categoria_dt_nasc) & !is.na(CS_SEXO)) %>%
@@ -786,18 +749,13 @@ piramide_srag <- ggplot(dados_piramide, aes(x = categoria_dt_nasc, y = casos, fi
 print(piramide_srag)  # Exibir o gráfico
 
 
-ggsave(filename = includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename = includeHTML("Caderno_de_Analise_PIRAMIDE.html")
 , plot = piramide_srag, width = 10, height = 6, units = "in", dpi = 300)           # Salvar o gráfico em um arquivo
 
-
-</code></pre>
-</div>
+```
 
 #GRAFICO CASOS DE SRAg por COVID POR SEMANA com média móvel
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 GRAFICO_CASOS_COVID_SE <- SRAG_filtrado2 %>% 
   filter(SEM_PRI != "2019_50") %>%              ####   ,SG_UF == "SP"   inserir filtro de UF
@@ -836,17 +794,14 @@ GRAFICO_CASOS_COVID_SE <- ggplot(GRAFICO_CASOS_COVID_SE, aes(x = as.factor(SEM_P
 print(GRAFICO_CASOS_COVID_SE)  ## mostrar o grafico
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename = includeHTML("Caderno_de_Analise_CASOS_COVID.html")
 , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
 
-</code></pre>
-</div>
+```
 
 # Gráfico óbitos de SRAG por covid-19 COM MÉDIA MÒVEL
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 # Filtrar os dados para óbitos e calcular a média móvel
 GRAFICO_OBITOS_COVID_SE <- SRAG_filtrado2 %>%
@@ -876,17 +831,14 @@ grafico_obitos_covid_SE <- ggplot(GRAFICO_OBITOS_COVID_SE, aes(x = as.factor(SEM
 print(grafico_obitos_covid_SE)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename = includeHTML("Caderno_de_Analise_OBITOS_COVID.html")
 , plot = grafico_obitos_covid_SE, width = 10, height = 6, units = "in", dpi = 300)
 
-</code></pre>
-</div>
+```
 
 # GRAFICO TENDENCIA TODOS OS VIRUS - Casos 
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 total_srag_semana <- SRAG_filtrado2 %>%
   group_by(SEM_PRI) %>%
@@ -959,17 +911,14 @@ GRAFICO_TEND_CASOS <- ggplot() +
 print(GRAFICO_TEND_CASOS )
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename = includeHTML("Caderno_de_Analise_TEND_CASOS.html")
 , plot = GRAFICO_TEND_CASOS, width = 10, height = 6, units = "in", dpi = 300)
 
-</code></pre>
-</div>
+```
 
 # GRAFICO TENDENCIA TODOS OS VIRUS - Óbitos
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 # Filtrar os dados para óbitos (evolucao == 2)
 SRAG_filtrado_obitos <- SRAG_filtrado2 %>%
@@ -1049,17 +998,14 @@ GRAFICO_TEND_OBITOS <- ggplot() +
 print(GRAFICO_TEND_OBITOS)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename =includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename =includeHTML("Caderno_de_Analise_TEND_OBITOS.html")
 , plot = GRAFICO_TEND_OBITOS, width = 10, height = 6, units = "in", dpi = 300)
 
-</code></pre>
-</div>
+```
 
 #  GRAFICO DUNET AMOSTRAS
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 # Preparar os dados
 dados_amostra <- SRAG_filtrado2 %>%
@@ -1103,18 +1049,15 @@ print(grafico_donut)
 ggsave(filename = print(GRAFICO_TEND_OBITOS)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename =includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename =includeHTML("Caderno_de_Analise_AMOSTRAS.html")
 , plot = GRAFICO_TEND_OBITOS, width = 10, height = 6, units = "in", dpi = 300),
        plot = grafico_donut, width = 10, height = 6, units = "in", dpi = 300)
        
 
-</code></pre>
-</div>
+```
+# Gráfico Tipo de Testes
 
-# Gráfico Tipo de Testes 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 # Preparar os dados considerando os três tipos de testes
 dados_testes <- SRAG_filtrado2 %>%
@@ -1168,18 +1111,14 @@ print(grafico_donut_testes)
 ggsave(filename = print(GRAFICO_TEND_OBITOS)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename =includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")
+ggsave(filename =includeHTML("Caderno_de_Analise_TESTES.html")
 , plot = GRAFICO_TEND_OBITOS, width = 10, height = 6, units = "in", dpi = 300), plot = grafico_donut_testes, width = 10, height = 6, units = "in", dpi = 300)
 
+```
 
-</code></pre>
-</div>
+# MAPAS   
 
-# MAPAS     
-
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 # Contar os casos de SRAG por município no estado de São Paulo
 casos_por_municipio <- SRAG_filtrado2 %>%
   filter(SG_UF_NOT == "SP") %>%
@@ -1225,16 +1164,11 @@ print(mapa_bolhas_sp)
 # Salvar o gráfico
 ggsave("mapa_bolhas_sp.png", mapa_bolhas_sp, width = 10, height = 8)
 
-
-</code></pre>
-</div>
-
+```
 
 # CASOS COM IDENTIFICAÇÃO DE VIRUS RESPIRATORIOS POREM SEM CLASSIFICAÇÃO DE SRAG 
 
-<div class="code-box">
-<button class="btn btn-primary" onclick="copyToClipboard('#diretorio')">Copiar Código</button>
-<pre id="diretorio"><code class="r">
+```
 
 NAO_SRAG_VR <- SRAG_final %>%
   mutate(sem_def_srag = ifelse(is.na(caso_srag) | caso_srag != "1", 0, 1))
@@ -1355,7 +1289,6 @@ write_xlsx(condicao_ideal, "tabela_combinacoes_ideal.xlsx")
 # Ver a tabela resultante
 print(condicao_ideal)
 
-</code></pre>
-</div>
+```
 
 

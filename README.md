@@ -39,7 +39,7 @@ RStudio é um ambiente de desenvolvimento integrado (IDE) que facilita o uso do 
 Abra o R ou o RStudio e utilize o seguinte código para instalar os pacotes necessários. Para garantir que os pacotes sejam carregados corretamente, vamos usar a função `install.packages` para instalar e `library` para carregar os pacotes.
 
 ```
-# Lista de pacotes para instalar
+# Lista de pacotes para instalar e carregar
 pacotes <- c(
   "data.table",    # Pacote para manipulação eficiente de grandes conjuntos de dados
   "openxlsx",      # Leitura e escrita de arquivos Excel
@@ -91,7 +91,7 @@ lapply(pacotes, require, character.only = TRUE)
 getwd() # Verificar o diretório de trabalho atual
 
 
-setwd("C:/Users/talita.batista/Documents/TrabalhosGTGripe/OFICINA_SRAG/OFICINA_SRAG") # Definir o diretório de trabalho
+setwd("C:/Users/talita.batista/Documents/TrabalhosGTGripe/OFICINA_SRAG/OFICINA_SRAG") # Definir o diretório de trabalho (exemplo)
 
 
 list.files() # Listar os arquivos presentes no diretório definido
@@ -104,8 +104,7 @@ list.files() # Listar os arquivos presentes no diretório definido
 ```
 
 
-SRAG <- #seucaminho
-
+SRAG <- read.dbf("C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/SRAGHOSPITALIZADO2251436_00_2024_(08_07) (1).dbf")     #usar o seu caminho
 ```
 
 # Remover Duplicidades
@@ -691,7 +690,7 @@ TABELA_UNIDA_OBITOS <- bind_rows(
   TABELA2_SRAG_RACA_OBITOS
 ) %>% relocate(varivel, .before = 1) # Colocar a coluna varivel em primeiro
 
-# Exportar a tabela unida para um arquivo Excel
+# Exportar a tabela unida com duas abas para um arquivo Excel
 write.xlsx(TABELA_UNIDA_OBITOS, "TABELA_UNIDA_OBITOS.xlsx")
 
 ```
@@ -748,13 +747,12 @@ piramide_srag <- ggplot(dados_piramide, aes(x = categoria_dt_nasc, y = casos, fi
 
 print(piramide_srag)  # Exibir o gráfico
 
+# Salvar o gráfico como uma imagem PNG (use o seu caminho)
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/Caderno_de_Analise_PIRAMIDE.png",
+       plot = piramide_srag,
+       width = 10, height = 6, units = "in", dpi = 300)
 
-ggsave(filename = includeHTML("Caderno_de_Analise_PIRAMIDE.html")
-, plot = piramide_srag, width = 10, height = 6, units = "in", dpi = 300)           # Salvar o gráfico em um arquivo
-
-```
-
-#GRAFICO CASOS DE SRAg por COVID POR SEMANA com média móvel
+# GRÁFICO CASOS DE SRAG POR COVID POR SEMANA EPIDEMIOLÓGICA COM MÉDIA MÓVEL
 ```
 
 GRAFICO_CASOS_COVID_SE <- SRAG_filtrado2 %>% 
@@ -768,7 +766,7 @@ GRAFICO_CASOS_COVID_SE <- SRAG_filtrado2 %>%
   select(SEM_PRI, `Casos Covid-19 Total`, `Óbitos SRAG por Covid-19`, `Casos SRAG por Covid-19`,
          `Letalidade de SRAG por Covid-19`)
 
-write.csv2 (GRAFICO_CASOS_COVID_SE,includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")")
+write.csv2 (GRAFICO_CASOS_COVID_SE,includeHTML("Caderno_de_Analise_SRAG_SIVEP.html")) #SALVAR ESSA TABELA EM EXCEL
 
 # Calcular a média móvel de 4 semanas (28 dias)
 GRAFICO_CASOS_COVID_SE <- GRAFICO_CASOS_COVID_SE %>%
@@ -794,12 +792,11 @@ GRAFICO_CASOS_COVID_SE <- ggplot(GRAFICO_CASOS_COVID_SE, aes(x = as.factor(SEM_P
 print(GRAFICO_CASOS_COVID_SE)  ## mostrar o grafico
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = includeHTML("Caderno_de_Analise_CASOS_COVID.html")
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/GRAFICO_CASOS_COVID_SE.png"
 , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
-
 ```
 
-# Gráfico óbitos de SRAG por covid-19 COM MÉDIA MÒVEL
+# GRÁFICO ÓBITOS DE SRAG POR COVID POR SEMANA EPIDEMIOLÓGICA COM MÉDIA MÓVEL
 
 ```
 
@@ -831,12 +828,12 @@ grafico_obitos_covid_SE <- ggplot(GRAFICO_OBITOS_COVID_SE, aes(x = as.factor(SEM
 print(grafico_obitos_covid_SE)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = includeHTML("Caderno_de_Analise_OBITOS_COVID.html")
-, plot = grafico_obitos_covid_SE, width = 10, height = 6, units = "in", dpi = 300)
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/grafico_obitos_covid_SE.png"
+       , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
 
 ```
 
-# GRAFICO TENDENCIA TODOS OS VIRUS - Casos 
+# GRÁFICO TENDENCIA TODOS OS VÍRUS - Casos 
 
 ```
 
@@ -911,12 +908,13 @@ GRAFICO_TEND_CASOS <- ggplot() +
 print(GRAFICO_TEND_CASOS )
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = includeHTML("Caderno_de_Analise_TEND_CASOS.html")
-, plot = GRAFICO_TEND_CASOS, width = 10, height = 6, units = "in", dpi = 300)
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/GRAFICO_TEND_CASOS .png"
+       , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
+
 
 ```
 
-# GRAFICO TENDENCIA TODOS OS VIRUS - Óbitos
+# GRÁFICO TENDÊNCIA TODOS OS VÍRUS - Óbitos
 
 ```
 
@@ -998,12 +996,13 @@ GRAFICO_TEND_OBITOS <- ggplot() +
 print(GRAFICO_TEND_OBITOS)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename =includeHTML("Caderno_de_Analise_TEND_OBITOS.html")
-, plot = GRAFICO_TEND_OBITOS, width = 10, height = 6, units = "in", dpi = 300)
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/GRAFICO_TEND_OBITOS.png"
+       , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
+
 
 ```
 
-#  GRAFICO DUNET AMOSTRAS
+#  GRÁFICO DUNET AMOSTRAS
 
 ```
 
@@ -1046,13 +1045,7 @@ grafico_donut <- ggplot(dados_amostra, aes(x = 2, y = n, fill = AMOSTRA)) +
 print(grafico_donut)
 
 # Salvar o gráfico em um arquivo
-ggsave(filename = print(GRAFICO_TEND_OBITOS)
-
-# Salvar o gráfico em um arquivo
-ggsave(filename =includeHTML("Caderno_de_Analise_AMOSTRAS.html")
-, plot = GRAFICO_TEND_OBITOS, width = 10, height = 6, units = "in", dpi = 300),
-       plot = grafico_donut, width = 10, height = 6, units = "in", dpi = 300)
-       
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/grafico_donut.png")
 
 ```
 # Gráfico Tipo de Testes
@@ -1107,13 +1100,8 @@ grafico_donut_testes <- ggplot(dados_testes, aes(x = 2, y = n, fill = Teste_labe
 # Exibir o gráfico
 print(grafico_donut_testes)
 
-# Salvar o gráfico
-ggsave(filename = print(GRAFICO_TEND_OBITOS)
-
 # Salvar o gráfico em um arquivo
-ggsave(filename =includeHTML("Caderno_de_Analise_TESTES.html")
-, plot = GRAFICO_TEND_OBITOS, width = 10, height = 6, units = "in", dpi = 300), plot = grafico_donut_testes, width = 10, height = 6, units = "in", dpi = 300)
-
+ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/grafico_donut_testes.png")
 ```
 
 # MAPAS   
@@ -1277,6 +1265,9 @@ write_xlsx(tabela_combinacoes, "tabela_combinacoes.xlsx")
 # Ver a tabela resultante
 print(tabela_combinacoes)
 
+# Ver a tabela resultante
+print(tabela_combinacoes)
+
 # Definir a condição "ideal"
 condicao_ideal <- casos_positivos %>%
   filter((TOSSE == 1 | GARGANTA == 1) &
@@ -1284,10 +1275,7 @@ condicao_ideal <- casos_positivos %>%
            (DISPNEIA == 1 | DESC_RESP == 1 | SATURACAO == 1))
 
 # Exportar a tabela para um arquivo Excel
-write_xlsx(condicao_ideal, "tabela_combinacoes_ideal.xlsx")
-
-# Ver a tabela resultante
-print(condicao_ideal)
+write.xlsx(tabela_combinacoes, "tabela_combinacoes_ideal.xlsx")
 
 ```
 

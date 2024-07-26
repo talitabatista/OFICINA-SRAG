@@ -102,8 +102,6 @@ list.files() # Listar os arquivos presentes no diretório definido
 # Carregar Dados DBF
 
 ```
-
-
 SRAG <- read.dbf("C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/SRAGHOSPITALIZADO2251436_00_2024_(08_07) (1).dbf")     #usar o seu caminho
 ```
 
@@ -659,8 +657,8 @@ write.xlsx(TABELA_UNIDA_CASOS, "TABELA_UNIDA_CASOS.xlsx")
 ```
 
 # Criar as tabelas de características de pessoas para os óbitos
-```
 
+```
 TABELA1_SRAG_CLASSIFICACAO_OBITOS <- SRAG_filtrado2 %>% 
   dcast(obito_srag + ANO ~ classi_nova, value.var = "obito_srag")
 
@@ -695,9 +693,9 @@ write.xlsx(TABELA_UNIDA_OBITOS, "TABELA_UNIDA_OBITOS.xlsx")
 
 ```
 
-```
-
 # Criar o workbook e adicionar as tabelas em abas separadas
+
+```
 wb <- createWorkbook()
 addWorksheet(wb, "Casos")
 addWorksheet(wb, "Óbitos")
@@ -752,9 +750,10 @@ ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/Cade
        plot = piramide_srag,
        width = 10, height = 6, units = "in", dpi = 300)
 
-# GRÁFICO CASOS DE SRAG POR COVID POR SEMANA EPIDEMIOLÓGICA COM MÉDIA MÓVEL
 ```
+# GRÁFICO CASOS DE SRAG POR COVID POR SEMANA EPIDEMIOLÓGICA COM MÉDIA MÓVEL
 
+```
 GRAFICO_CASOS_COVID_SE <- SRAG_filtrado2 %>% 
   filter(SEM_PRI != "2019_50") %>%              ####   ,SG_UF == "SP"   inserir filtro de UF
   mutate(uti_covid = ifelse(UTI == 1 & caso_srag_por_covid == 1, 1, 0)) %>% 
@@ -772,7 +771,6 @@ write.csv2 (GRAFICO_CASOS_COVID_SE,includeHTML("Caderno_de_Analise_SRAG_SIVEP.ht
 GRAFICO_CASOS_COVID_SE <- GRAFICO_CASOS_COVID_SE %>%
   arrange(SEM_PRI) %>%
   mutate(`Média Móvel 4 Semanas` = rollmean(`Casos Covid-19 Total`, k = 4, fill = NA, align = "right"))
-
 
 # Criar o gráfico de barras com a média móvel
 GRAFICO_CASOS_COVID_SE <- ggplot(GRAFICO_CASOS_COVID_SE, aes(x = as.factor(SEM_PRI), y = `Casos Covid-19 Total`)) +
@@ -794,12 +792,12 @@ print(GRAFICO_CASOS_COVID_SE)  ## mostrar o grafico
 # Salvar o gráfico em um arquivo
 ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/GRAFICO_CASOS_COVID_SE.png"
 , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
+
 ```
 
 # GRÁFICO ÓBITOS DE SRAG POR COVID POR SEMANA EPIDEMIOLÓGICA COM MÉDIA MÓVEL
 
 ```
-
 # Filtrar os dados para óbitos e calcular a média móvel
 GRAFICO_OBITOS_COVID_SE <- SRAG_filtrado2 %>%
   filter(SEM_PRI != "2019_50" & EVOLUCAO == "2") %>% # Filtrar apenas os óbitos e excluir semana específica
@@ -911,7 +909,6 @@ print(GRAFICO_TEND_CASOS )
 ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/GRAFICO_TEND_CASOS .png"
        , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
 
-
 ```
 
 # GRÁFICO TENDÊNCIA TODOS OS VÍRUS - Óbitos
@@ -992,20 +989,17 @@ GRAFICO_TEND_OBITOS <- ggplot() +
     axis.ticks = element_line(color = "black")
   )
 
-
 print(GRAFICO_TEND_OBITOS)
 
 # Salvar o gráfico em um arquivo
 ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/GRAFICO_TEND_OBITOS.png"
        , plot = GRAFICO_CASOS_COVID_SE, width = 10, height = 6, units = "in", dpi = 300)
 
-
 ```
 
 #  GRÁFICO DUNET AMOSTRAS
 
 ```
-
 # Preparar os dados
 dados_amostra <- SRAG_filtrado2 %>%
   filter(AMOSTRA %in% c("1", "2", "9")) %>%
@@ -1051,7 +1045,6 @@ ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/graf
 # Gráfico Tipo de Testes
 
 ```
-
 # Preparar os dados considerando os três tipos de testes
 dados_testes <- SRAG_filtrado2 %>%
   mutate(
@@ -1102,6 +1095,7 @@ print(grafico_donut_testes)
 
 # Salvar o gráfico em um arquivo
 ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/grafico_donut_testes.png")
+
 ```
 
 # MAPAS   
@@ -1153,19 +1147,16 @@ print(mapa_bolhas_sp)
 ggsave("mapa_bolhas_sp.png", mapa_bolhas_sp, width = 10, height = 8)
 
 ```
-
 # CASOS COM IDENTIFICAÇÃO DE VIRUS RESPIRATORIOS POREM SEM CLASSIFICAÇÃO DE SRAG 
 
 ```
-
 NAO_SRAG_VR <- SRAG_final %>%
   mutate(sem_def_srag = ifelse(is.na(caso_srag) | caso_srag != "1", 0, 1))
 
 
 table(NAO_SRAG_VR$sem_def_srag)
-#0         1 
+#0         1                 #exemplo do table
 #42606   82578
-
 
 NAO_SRAG_VR <- SRAG_final %>%
   mutate(sem_def_srag = ifelse(is.na(caso_srag) | caso_srag != "1", 0, 1),
@@ -1174,7 +1165,6 @@ NAO_SRAG_VR <- SRAG_final %>%
                                                  "INFLUENZA_A_NAOSUB", "ADENOVIRUS", "SINCICIAL", "RINOVIRUS", 
                                                  "INFLUENZA_A_H3N2", "BOCAVIRUS", "INFLUENZA_B", "PARAINFLUENZA") ~ 1,  TRUE ~ 0))
 table(NAO_SRAG_VR$ casos_pos_sem_def)
-
 #0          1 
 #111539   13645 
 
@@ -1202,7 +1192,6 @@ grafico_casos_sem_def <- ggplot(frequencia_virus, aes(x = reorder(VIRUS_RESP, -c
 
 print(grafico_casos_sem_def)
 
-
 # Função para contar os valores 1, 0 e NA em uma coluna, com tratamento especial para a coluna EVOLUCAO
 contar_valores <- function(coluna, coluna_nome) {
   if (coluna_nome == "EVOLUCAO") {
@@ -1218,8 +1207,6 @@ contar_valores <- function(coluna, coluna_nome) {
       NAs = sum(is.na(coluna))
     ) }}
 
-
-
 # Criar uma tabela com as contagens para cada variável
 tabela_contagens <- tibble(
   Variavel = c("TOSSE", "GARGANTA", "HOSPITAL", "EVOLUCAO", "DISPNEIA", "DESC_RESP", "SATURACAO"),
@@ -1233,7 +1220,6 @@ tabela_contagens <- tibble(
     contar_valores(casos_positivos$SATURACAO, "SATURACAO")
   )
 )
-
 
 print(tabela_contagens)
 

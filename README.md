@@ -1,4 +1,4 @@
----
+ai---
 title: "CADERNO DE ANÁLISES DE SRAG"
 output: html_document
 ---
@@ -618,7 +618,7 @@ SRAG_filtrado2 <- SRAG_final %>%
   
 ```
 
-# Criar as tabelas para casos com caracteristicas de pessoas
+# Criar as tabelas para casos com características de pessoa
 
 ```
 
@@ -656,7 +656,7 @@ write.xlsx(TABELA_UNIDA_CASOS, "TABELA_UNIDA_CASOS.xlsx")
 
 ```
 
-# Criar as tabelas de características de pessoas para os óbitos
+# Criar as tabelas de características de pessoa para os óbitos
 
 ```
 TABELA1_SRAG_CLASSIFICACAO_OBITOS <- SRAG_filtrado2 %>% 
@@ -831,7 +831,7 @@ ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/graf
 
 ```
 
-# GRÁFICO TENDENCIA TODOS OS VÍRUS - Casos 
+# GRÁFICO TENDÊNCIA TODOS OS VÍRUS - Casos 
 
 ```
 
@@ -1099,6 +1099,8 @@ ggsave(filename = "C:/Users/talit/Área de Trabalho/TrabalhoGTgripe/Oficina/graf
 ```
 
 # MAPAS   
+Para selecionar seu estado basta substituir o "SP" pela sigla do estado desejado na segunda linha de filter
+Para filtrar determnado município pode-se substituir a variável "SG_UF_NOT" pela variável de município desejada (CO_MUN_RES para município de residência do caso ou CO_MUN_NOT para município de notificação, por exemplo)
 
 ```
 # Contar os casos de SRAG por município no estado de São Paulo

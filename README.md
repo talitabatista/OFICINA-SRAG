@@ -148,10 +148,12 @@ SRAG_final <- bind_rows(registros_duplicados, registros_nao_duplicados)
 
 SRAG_final <- SRAG_final %>% 
   mutate(SEM_PRI = as.numeric(SEM_PRI)) %>%
-  mutate(variavel01 = ifelse(HOSPITAL == 1 | EVOLUCAO == 2, 1, 0),
-         variavel02 = ifelse(TOSSE == 1 | GARGANTA == 1, 1, 0),
-         variavel03 = ifelse(DISPNEIA == 1 | SATURACAO == 1 | DESC_RESP == 1, 1, 0)) %>% 
-  mutate(caso_srag = ifelse(variavel01 == 1 & variavel02 == 1 & variavel03 == 1, 1,0))
+  mutate(caso_srag = case_when(
+          ((HOSPITAL == 1 | EVOLUCAO == 2) &
+          (TOSSE == 1 | GARGANTA == 1) &
+          (DISPNEIA == 1 | SATURACAO == 1 | DESC_RESP == 1)) == TRUE ~ 1,
+          TRUE ~ 0)
+  )
 
 
 SRAG_final <- SRAG_final %>%  
@@ -161,28 +163,15 @@ SRAG_final <- SRAG_final %>%
          CRITERIO = as.numeric(as.character(CRITERIO)), 
          DT_SIN_PRI = dmy(DT_SIN_PRI), 
          DT_EVOLUCA = dmy(DT_EVOLUCA)) %>%  
-  mutate(ANO = case_when(
-    DT_SIN_PRI >= ymd("2019-12-29") & DT_SIN_PRI < ymd("2021-01-03") ~ "2020", 
-    DT_SIN_PRI >= ymd("2021-01-03") & DT_SIN_PRI < ymd("2022-01-02") ~ "2021", 
-    DT_SIN_PRI >= ymd("2022-01-02") & DT_SIN_PRI < ymd("2023-01-01") ~ "2022", 
-    DT_SIN_PRI >= ymd("2023-01-01") & DT_SIN_PRI < ymd("2023-12-31") ~ "2023", 
-    DT_SIN_PRI >= ymd("2023-12-31") & DT_SIN_PRI < ymd("2024-12-29") ~ "2024")) %>% 
+  mutate(ANO = epiyear(DT_SIN_PRI)) %>%  # epiyear é uma função da biblioteca lubridate que extrai ano epidemiológico a partir de uma data.
   mutate(ANO_SEM_PRI = paste(ANO, SEM_PRI, sep = "_")) %>% 
-  mutate(mes_pri_sint1 = ifelse(month(DT_SIN_PRI) %in% 1:9, paste0("0", month(DT_SIN_PRI)), as.character(month(DT_SIN_PRI)))) %>% 
-  mutate(mes_pri_sint = paste0(year(DT_SIN_PRI), "_", mes_pri_sint1)) %>% 
   mutate(teste_covid = ifelse(PCR_SARS2 == 1 | AN_SARS2 == 1, 1, 0)) %>%         # Cria uma nova variável teste_covid que indica se o paciente teve um teste                                                                                                             positivo para COVID-19, baseado em PCR ou teste de antígeno.
-  mutate(classi_nova = ifelse(CLASSI_FIN == 5 & teste_covid == 1, 5, 0)) %>%           # Cria uma nova variável classi_nova onde os casos confirmados de COVID-19                                                                                                                                                                           (CLASSI_FIN == 5 e teste_covid == 1) recebem o valor 5, e os outros recebem 0.
-  mutate(classi_nova = ifelse(is.na(classi_nova) | classi_nova == 0, CLASSI_FIN, classi_nova)) %>%  # Atualiza classi_nova para ser igual a CLASSI_FIN se classi_nova for NA ou 0, mantendo os valores já atribuídos como 5.
-  mutate(classi_teste = ifelse(is.na(classi_nova), 0, classi_nova)) %>%   #Cria uma nova variável classi_teste onde 'classi_nova' é substituída por 0 se for NA, caso contrário, mantém o valor de classi_nova.
-
-  mutate(variavel1 = ifelse(classi_teste == 5 & DT_SIN_PRI > ymd("2020-02-15"), 0, 1)) %>%    # Cria uma nova variável 'variavel1' que indica casos de COVID-19 confirmados (classi_teste == 5) após 15 de fevereiro de 2020 (DT_SIN_PRI > "2020-02-15") com valor 0, e 1 para os outros casos
-  mutate(obito_SRAG_TOTAL_P = ifelse(EVOLUCAO == 2, 1, 0)) %>% 
-  mutate(evolucao_teste = ifelse(classi_nova == 5 & EVOLUCAO == 2 & DT_EVOLUCA < "2020-03-12", 0, 1)) %>%  #Cria uma nova variável 'evolucao_teste' que recebe valor 0 para óbitos por COVID-19 ocorridos antes de 12 de março de 2020 e 1 para os outros casos
-
-  filter(evolucao_teste == 1) %>%   # Filtra os dados para incluir apenas os registros onde evolucao_teste é igual a 1, excluindo os óbitos por COVID-19 ocorridos antes de 12 de março de 2020
-  replace_na(list(EVOLUCAO_teste = 0)) %>%  # Substitui valores NA na variável EVOLUCAO_teste por 0.
-  mutate(indigena = ifelse(CS_RACA == 5, 1, 0), 
-         tabagismo = ifelse(TABAG == 1, 1, 0))
+  mutate(classi_teste = case_when(
+            teste_covid == 1 ~ 5,
+            is.na(CLASSI_FIN) ~ 0,
+            TRUE ~ CLASSI_FIN) %>%  # Na presença de teste positivo, a classificação final deve ser 5, independentemente do preenhcimento original de CLASSI_FIN.
+  filter(classi_teste != 5 | DT_SIN_PRI > ymd("2020-02-15")) %>%    # Casos classificados como COVID-19 (classi_teste == 5) antes de 16 de fevereiro de 2020 serão descartados.
+  filter(!(classi_nova == 5 & EVOLUCAO == 2 & DT_EVOLUCA < "2020-03-12"))  # Descarta óbitos por COVID-19 ocorridos antes de 12 de março de 2020.
          
 ```
          
@@ -193,8 +182,10 @@ SRAG_final <- SRAG_final %>%
 SRAG_final <- SRAG_final %>%
   mutate(DT_NASC = parse_date_time(DT_NASC, orders = c("dmy", "ymd")),                 # Calcular a idade com base no valor de DT_NASC e DT_SIN_PRI   
          DT_SIN_PRI = parse_date_time(DT_SIN_PRI, orders = c("dmy", "ymd"))) %>%
- 
-  mutate(idade = as.numeric(difftime(DT_SIN_PRI, DT_NASC, units = "days")) / 365.25) %>%    
+  mutate(idade = case_when(
+            TP_IDADE == 3 ~ NU_IDADE_N,
+            TP_IDADE < 3 ~ 0,
+            TRUE ~ NA_integer_)) %>%    # Se TP_IDADE é 3, a variável NU_IDADE_N já está em anos.
   mutate(categoria_dt_nasc = case_when(
     idade < 1 ~ "1. Menor que 1", 
     idade >= 1 & idade < 5 ~ "2. De 1 a 4 anos", 
